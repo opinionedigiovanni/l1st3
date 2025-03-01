@@ -3,22 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accesso ai File Privati</title>
+    <title>Scarica i File</title>
 </head>
 <body>
-    <h1>Scarica i file dalla Repository Privata</h1>
-    <button onclick="getFile()">Ottieni il File</button>
-    <p id="link"></p>
+    <h1>Scarica i file dalle Repository Private</h1>
+
+    <button onclick="getFile(0)">Scarica File 1</button>
+    <p id="link0"></p>
+
+    <button onclick="getFile(1)">Scarica File 2</button>
+    <p id="link1"></p>
 
     <script>
-        async function getFile() {
-            const url = "https://api.github.com/repos/opinionedigiovanni/tv/contents/channels_italy.m3u8";
-            const token = "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";
+        // Configurazione dei file
+        const files = [
+            {
+                repo: "dl-italy",
+                path: "cartella/file1.txt",
+                elementId: "https://api.github.com/repos/opinionedigiovanni/tv/contents/channels_italy.m3u8"
+            },
+            {
+                repo: "tv",
+                path: "cartella/file2.txt",
+                elementId: "https://github.com/opinionedigiovanni/dl-italy/raw/refs/heads/main/247ita.m3u8"
+            }
+        ];
+
+        async function getFile(index) {
+            const GITHUB_USERNAME = "opinionedigiovanni";
+            const TOKEN = "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"; 
+            const file = files[index];
+
+            const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${file.repo}/contents/${file.path}`;
 
             try {
                 const response = await fetch(url, {
                     headers: { 
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${TOKEN}`,
                         Accept: "application/vnd.github.v3.raw"
                     }
                 });
@@ -28,10 +49,10 @@
                 const fileBlob = await response.blob();
                 const fileURL = URL.createObjectURL(fileBlob);
                 
-                document.getElementById("link").innerHTML = `<a href="${fileURL}" download>Scarica il file</a>`;
+                document.getElementById(file.elementId).innerHTML = `<a href="${fileURL}" download>Scarica il file</a>`;
             } catch (error) {
                 console.error(error);
-                document.getElementById("link").textContent = "Errore nel recupero del file";
+                document.getElementById(file.elementId).textContent = "Errore nel recupero del file";
             }
         }
     </script>
